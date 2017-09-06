@@ -1,0 +1,69 @@
+####################################################################
+#set( $type = "" )
+####################################################################
+import sqlite3
+from sqlite3 import Error
+from commons.config import database_init
+
+
+def create_db(db_file):
+    """ create a database connection to a SQLite database """
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+        print("Database created, version = ", sqlite3.version)
+    except Error as e:
+        print(e)
+    finally:
+        conn.close()
+
+
+def exec_sql(sql):
+    conn = sqlite3.connect(database_init)
+
+    c = conn.cursor()
+
+    # Create table
+    c.execute(sql)
+
+    # Save (commit) the changes
+    conn.commit()
+
+    # We can also close the connection if we are done with it.
+    # Just be sure any changes have been committed or they will be lost.
+    conn.close()
+
+
+if __name__ == '__main__':
+    create_db(database_init)
+
+    exec_sql('''PRAGMA foreign_keys=off;''')
+
+#foreach( $entity in $selectedEntities )
+    exec_sql('''
+            CREATE TABLE ${entity.name}(
+#foreach( $field in $entity.attributes )
+#if( $field.isTemporalType() )
+#set( $type = "DATE" )
+#elseif( $field.isNumberType() )
+#set( $type = "INTEGER" )
+#elseif( $field.isLongText() )
+#set( $type = "BLOB" )
+#else
+#set( $type = "VARCHAR" )
+#end
+                ${field.name} $type#if( $field.isAutoIncremented()) AUTO INCREMENT #end#if( $field.isDatabaseNotNull()) NOT NULL#end,    
+#end
+                PRIMARY KEY($entity.keyAttributesNamesAsString(', '))
+#foreach( $field in $entity.nonKeyAttributes )
+#if( $field.isFK() )
+#set( $entity = ${field.referencedEntity} )
+                FOREIGN KEY($field.name) REFERENCES ${field.referencedEntityName}(${entity.keyAttributesNamesAsString('')})
+#end
+#end
+            );
+    ''')
+
+#end
+    exec_sql('''PRAGMA foreign_keys=on;''')
+

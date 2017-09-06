@@ -1,0 +1,3 @@
+database_url = "sqlite:///sqlite_db.sqlite"
+
+database_init = "../sqlite2.sqlite"
