@@ -16,7 +16,7 @@ from dao.${entity.name}_dao import ${entity.name}Dao
 #end
 
 #foreach( $entity in $selectedEntities )
-from commons.UnitTest.${entity.name}_unit_test_ import TestDao${entity.name}
+from unitTest.${entity.name}_unit_test import TestDao${entity.name}
 #end
 
 #foreach( $entity in $selectedEntities )
