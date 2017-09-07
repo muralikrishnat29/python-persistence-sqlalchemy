@@ -1,3 +1,6 @@
-database_url = "sqlite:///sqlite_db.sqlite"
+${SHARP} Python class for configuration
+${SHARP} Created on $today.date ( Time $today.time )
 
-database_init = "../sqlite2.sqlite"
+database_url = "sqlite:///database.sqlite"
+
+database_file = "../database.sqlite"

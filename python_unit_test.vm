@@ -46,7 +46,6 @@ class TestDao${entity.name}(unittest.TestCase):
     def test_dao(self):
 
         print("--- test ${entity.name}Persistence ")
-
         entity = ${entity.name}()
         ${SHARP} --- Key values
 #set( $cpt = 0 )

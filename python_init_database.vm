@@ -1,41 +1,16 @@
 ####################################################################
 #set( $type = "" )
 ####################################################################
-import sqlite3
-from sqlite3 import Error
-from commons.config import database_init
+${SHARP} Python class for init the database
+${SHARP} Created on $today.date ( Time $today.time )
 
-
-def create_db(db_file):
-    """ create a database connection to a SQLite database """
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-        print("Database created, version = ", sqlite3.version)
-    except Error as e:
-        print(e)
-    finally:
-        conn.close()
-
-
-def exec_sql(sql):
-    conn = sqlite3.connect(database_init)
-
-    c = conn.cursor()
-
-    # Create table
-    c.execute(sql)
-
-    # Save (commit) the changes
-    conn.commit()
-
-    # We can also close the connection if we are done with it.
-    # Just be sure any changes have been committed or they will be lost.
-    conn.close()
+from commons.config import database_file
+from commons.database_managing import create_db
+from commons.database_managing import exec_sql
 
 
 if __name__ == '__main__':
-    create_db(database_init)
+    create_db(database_file)
 
     exec_sql('''PRAGMA foreign_keys=off;''')
 
@@ -47,8 +22,6 @@ if __name__ == '__main__':
 #set( $type = "DATE" )
 #elseif( $field.isNumberType() )
 #set( $type = "INTEGER" )
-#elseif( $field.isLongText() )
-#set( $type = "BLOB" )
 #else
 #set( $type = "VARCHAR" )
 #end
