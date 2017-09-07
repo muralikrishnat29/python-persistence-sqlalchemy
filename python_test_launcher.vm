@@ -5,25 +5,7 @@ import unittest
 import datetime
 
 #foreach( $entity in $selectedEntities )
-<<<<<<< HEAD
 from unitTest.${entity.name}_unit_test import TestDao${entity.name}
-=======
-#if( ! $entity.hasCompositePrimaryKey() )
-from entities.${entity.name} import ${entity.name}
-from dao.${entity.name}_dao import ${entity.name}Dao
-
-#end
-#end
-
-#foreach( $entity in $selectedEntities )
-from unitTest.${entity.name}_unit_test import TestDao${entity.name}
-#end
-
-#foreach( $entity in $selectedEntities )
-#if( ! $entity.hasCompositePrimaryKey() )
-${entity.name.toLowerCase()}_dao = ${entity.name}Dao()
-#end
->>>>>>> 97db7bf5a8037f41ee2380acc8cae5f8fdd2d6de
 #end
 
 
