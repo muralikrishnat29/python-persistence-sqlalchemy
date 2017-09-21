@@ -5,7 +5,7 @@
 ${SHARP} Python class for service of ${entity.name} 
 ${SHARP} Created on $today.date ( Time $today.time )
 
-from entities.${entity.name} import ${entity.name}
+from entities.${entity.name}_class import ${entity.name}
 from dao.commons import common_dao
 from sqlalchemy import text
 

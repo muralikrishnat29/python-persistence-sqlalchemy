@@ -16,7 +16,7 @@ ${SHARP} Created on $today.date ( Time $today.time )
 import unittest
 import datetime
 
-from entities.$entity.name import $entity.name
+from entities.${entity.name}_class import $entity.name
 from dao.${entity.name}_dao import ${entity.name}Dao
 ${entity.name.toLowerCase()}_dao = ${entity.name}Dao()
 
