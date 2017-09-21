@@ -5,5 +5,5 @@ from tests.${entity.name}_test import TestDao${entity.name}
 #end
 
 
-if __name__ = '__main__':
+if __name__ == "__main__":
     unittest.main()
