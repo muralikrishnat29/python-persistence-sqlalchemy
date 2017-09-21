@@ -1,42 +1,73 @@
 ####################################################################
-#set( $type = "" )
+#set( $list = "" )
+#set( $value = "" )
+#set( $list_value = "" )
+#set( $cpt = 0 )
+#set( $cpt_pk = 0 )
 ####################################################################
-${SHARP} Python class for init the database
+${SHARP} Python class for init the database for tests
 ${SHARP} Created on $today.date ( Time $today.time )
 
-from commons.config import database_file
-from commons.database_managing import create_db
 from commons.database_managing import exec_sql
 
 
 if __name__ == '__main__':
-    create_db(database_file)
 
     exec_sql('''PRAGMA foreign_keys=off;''')
 
 #foreach( $entity in $selectedEntities )
-    exec_sql('''
-            CREATE TABLE ${entity.name}(
+#if( ! $entity.hasCompositePrimaryKey() )
+#set( $cpt = 0 )
+#set( $cpt_pk = 0 )
 #foreach( $field in $entity.attributes )
-#if( $field.isTemporalType() )
-#set( $type = "DATE" )
-#elseif( $field.isNumberType() )
-#set( $type = "INTEGER" )
+#set( $cpt = $cpt + 1 )
+#end
+    exec_sql('''
+#set( $list = "" )
+#set( $list_value = "" )  
+#foreach( $field in $entity.attributes )
+#if( $foreach.count < $cpt )
+#set( $list = $list + $field.name + ", ")
 #else
-#set( $type = "VARCHAR" )
-#end
-                ${field.name} $type#if( $field.isAutoIncremented()) AUTO INCREMENT #end#if( $field.isDatabaseNotNull()) NOT NULL#end,    
-#end
-                PRIMARY KEY($entity.keyAttributesNamesAsString(', '))
-#foreach( $field in $entity.nonKeyAttributes )
-#if( $field.isFK() )
-#set( $entity = ${field.referencedEntity} )
-                FOREIGN KEY($field.name) REFERENCES ${field.referencedEntityName}(${entity.keyAttributesNamesAsString('')})
+#set( $list = $list + $field.name)
 #end
 #end
-            );
+#foreach( $attribute in $entity.keyAttributes )
+#set( $cpt_pk = $cpt_pk + 1 )
+#if( $attribute.isNumberType() )
+#set( $value = 100 )
+#else
+#set( $value = "'AAA'" )
+#end
+#set( $list_value = $list_value + $value + ", ") 
+#end
+#set( $cpt = $cpt - $cpt_pk )
+#foreach( $attribute in $entity.nonKeyAttributes )
+#if($attribute.isFK())
+#if( $attribute.isNumberType())
+#set( $value = 100 )	
+#else
+#set( $value = "'AAA'" )
+#end
+#elseif( $attribute.isTemporalType())
+#set( $value = "'1011-11-11'" )
+#elseif( $attribute.isNumberType() )
+#set( $value = 1111111 )
+#else
+#set( $value = "'AAAAAAAAA'")
+#end
+#if( $foreach.count < $cpt )
+#set( $list_value = $list_value + $value + ", ") 
+#else
+#set( $list_value = $list_value + $value) 
+#end 
+#end
+            INSERT INTO ${entity.name}($list)
+            VALUES($list_value);
     ''')
+    print("Table ${entity.name} : innitialized")
 
+#end
 #end
     exec_sql('''PRAGMA foreign_keys=on;''')
 
