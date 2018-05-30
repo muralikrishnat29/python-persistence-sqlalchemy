@@ -72,7 +72,7 @@ class ${entity.name}Service:
         """
 #foreach( $field in $entity.keyAttributes )
         # print('Compare ' + str(entity.${field.name}) + ' to ' + str(${field.name}) ) # for DEBUG
-        if entity.${field.name} != ${field.name} :
+        if str(entity.${field.name}) != str(${field.name}) :
             return False
 #end
         return True
