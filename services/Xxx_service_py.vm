@@ -31,52 +31,50 @@ class ${entity.name}Service:
 
         entities = self.dao.find_all()
         items = []
-        for entity in entities:
-            selected = False
-##
-#if( $entity.hasCompositePrimaryKey() )
-#set($primaryKeycondition1 = "")
-#set($primaryKeycondition2 = "")
-#set($primaryKeyValue = "")
-#set($strFields = "")
-##
-#foreach( $field in $entity.keyAttributes )
-#if($foreach.count < 2)
-#set($primaryKeycondition1 = $field.name + " is not None")
-#set($primaryKeycondition2 = "entity." + $field.name + " == int(" + $field.name + ")")
-#set($primaryKeyValue = "str(entity.$field.name)")
-#else
-#set($primaryKeycondition1 = $primaryKeycondition1 + " and " + $field.name + " is not None")
-#set($primaryKeycondition2 = $primaryKeycondition2 + " and entity." + $field.name + " == int(" + $field.name + ")")
-#set($primaryKeyValue = $primaryKeyValue + " + '|' + str(entity.$field.name)")
-##
-#foreach( $field in $field.referencedEntity.nonKeyAttributes )
-#if($foreach.count < 2)
-#set($strFields = "entity.$field.name")
-#else
-#set($strFields = $strFields + " + ' ' + str(entity.$field.name)")
-#end
-#end
-##
-#end
-#end
-            if ${primaryKeycondition1}:  
-                if ${primaryKeycondition2}:  
-                    selected = True
-            value = $primaryKeyValue
-            label = value + " - " + $strFields # all str fields
-            item = ListItem(value, label, selected) # item object
-#else
-            if ${entity.keyAttribute.name} is not None:  
-                if entity.${entity.keyAttribute.name} == int(${entity.keyAttribute.name}) :
-                    selected = True
-            value = str(entity.${entity.keyAttribute.name})
-            label = value + " - " + str(entity.${entity.keyAttribute.name})
-            item = ListItem(value, label, selected) # item object
-#end
+#if($entity.hasCompositePrimaryKey())
+            # This entity has a composite primary key : cannot build the key value
+            # TODO : define the composite key management here
+            item = ListItem("0", "Composite Primary Key : ", False) # item object
+            # Append new ListItem object 'as dict' in the list
             items.append(item.__dict__) # item dictionary : {'value': x, 'label': x, 'selected': x}
-            print(item.__dict__) # for DEBUG
+#else
+        for entity in entities:
+            # Define ListItem attribute
+            value = str(entity.${entity.keyAttribute.name})
+            label = self.get_label(entity)
+            selected = self.has_primary_key(entity, $entity.keyAttributesNamesAsString(', '))
+            # Create new ListItem object
+            item = ListItem(value, label, selected) # item object
+            # Append new ListItem object 'as dict' in the list
+            items.append(item.__dict__) # item dictionary : {'value': x, 'label': x, 'selected': x}
+            # print(item.__dict__) # for DEBUG
+#end
         return items
+
+    def get_label(self, entity):
+        """
+        Returns the label to be printed in a List or ComboBox for the given entity
+        """
+        # TODO : customize the label here
+        s = str(entity.${entity.keyAttribute.name}) # Primary Key
+        s = s + " - " # Separator
+        # Text to be printed
+#foreach( $field in $entity.nonKeyAttributes )
+#if( $field.isStringType() )
+        s = s + str(entity.${field.name}) + " "
+#end
+#end
+        return s
+
+    def has_primary_key(self, entity, $entity.keyAttributesNamesAsString(', ')):
+        """
+        Returns TRUE if the given entity has the given PK value(s)
+        """
+#foreach( $field in $entity.keyAttributes )
+        if entity.${field.name} != ${field.name} :
+            return False
+#end
+        return True
 
     def insert(self, entity):
         """
