@@ -29,15 +29,26 @@ class ${entity.name}Service:
         :return:  all entities
         """
 
+#if($entity.hasCompositePrimaryKey())
+        # This entity has a composite primary key : cannot build the key value
+        # TODO : define your own composite key management here
+        items = []
+        #entities = self.dao.find_all()
+        #for entity in entities:
+        #    # Define ListItem attribute
+        #    value = str(THE_COMPOSITE_KEY)
+        #    label = self.get_label(entity)
+        #    selected = self.has_primary_key(entity, $entity.keyAttributesNamesAsString(', '))
+        #    # Create new ListItem object
+        #    item = ListItem(value, label, selected) # item object
+        #    # Append new ListItem object 'as dict' in the list
+        #    items.append(item.__dict__) # item dictionary : {'value': x, 'label': x, 'selected': x}
+        item = ListItem("", "Composite Key : TODO", False) # item object
+        items.append(item.__dict__) # item dictionary : {'value': x, 'label': x, 'selected': x}
+        return items
+#else
         entities = self.dao.find_all()
         items = []
-#if($entity.hasCompositePrimaryKey())
-            # This entity has a composite primary key : cannot build the key value
-            # TODO : define the composite key management here
-            item = ListItem("0", "Composite Primary Key : ", False) # item object
-            # Append new ListItem object 'as dict' in the list
-            items.append(item.__dict__) # item dictionary : {'value': x, 'label': x, 'selected': x}
-#else
         for entity in entities:
             # Define ListItem attribute
             value = str(entity.${entity.keyAttribute.name})
@@ -48,9 +59,10 @@ class ${entity.name}Service:
             # Append new ListItem object 'as dict' in the list
             items.append(item.__dict__) # item dictionary : {'value': x, 'label': x, 'selected': x}
             # print(item.__dict__) # for DEBUG
-#end
         return items
+#end
 
+#if( ! $entity.hasCompositePrimaryKey())
     def get_label(self, entity):
         """
         Returns the label to be printed in a List or ComboBox for the given entity
@@ -65,13 +77,13 @@ class ${entity.name}Service:
 #end
 #end
         return s
+#end
 
     def has_primary_key(self, entity, $entity.keyAttributesNamesAsString(', ')):
         """
         Returns TRUE if the given entity has the given PK value(s)
         """
 #foreach( $field in $entity.keyAttributes )
-        # print('Compare ' + str(entity.${field.name}) + ' to ' + str(${field.name}) ) # for DEBUG
         if str(entity.${field.name}) != str(${field.name}) :
             return False
 #end
