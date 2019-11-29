@@ -11,7 +11,7 @@ ${SHARP} Created on $today.date ( Time $today.time )
 from commons.database_managing import exec_sql
 
 
-if __name__ == '__main__':
+def init_database():
 
     exec_sql('''PRAGMA foreign_keys=off;''')
 

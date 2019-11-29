@@ -6,7 +6,10 @@ from sqlalchemy.orm import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
-from commons.config import database_url
+from commons.config import database_url, database_file
+from create_database import create_database
+from init_database import init_database
+import os
 
 
 class DataProvider(object):
@@ -18,6 +21,9 @@ class DataProvider(object):
         Connect to a database and provide data managing
         """
         engine_connect = create_engine(database_url, echo=True)
+        if(not os.path.isfile(database_file)):
+            create_database()
+            init_database()
         self.Session = sessionmaker(bind=engine_connect, expire_on_commit=False)
         self.metadata = MetaData(engine_connect)
 
